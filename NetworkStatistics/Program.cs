@@ -1,13 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using SharpPcap;
-using SharpPcap.LibPcap;
-using SharpPcap.Statistics;
 
-namespace Example11
+namespace NetworkStatistics
 {
     /// <summary>
     /// Stat collection capture example
@@ -21,7 +24,7 @@ namespace Example11
 
         static Dictionary<string, List<Info>> dic = new Dictionary<string, List<Info>>();
         static Dictionary<DateTime, int> dicCounter = new Dictionary<DateTime, int>();
-        static ILiveDevice? device;
+        static ILiveDevice device;
 
         static bool countFlag = true;
 
@@ -66,8 +69,7 @@ namespace Example11
             device = devices[i];
 
             //Register our handler function to the 'packet arrival' event
-            device.OnPacketArrival +=
-                new PacketArrivalEventHandler(device_OnPacketArrival);
+            device.OnPacketArrival += device_OnPacketArrival;
 
             // Open the device for capturing
             int readTimeoutMilliseconds = 1000;
@@ -114,7 +116,7 @@ namespace Example11
         }
 
 
-        private static void Console_CancelKeyPress(object? sender, ConsoleCancelEventArgs e)
+        private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
             if (Directory.Exists("statistics"))
             {
@@ -132,8 +134,8 @@ namespace Example11
             }
 
             countFlag = false;
-            device?.StopCapture();
-            Thread.Sleep(3000);
+            device.OnPacketArrival -= device_OnPacketArrival;
+
 
             string str = JsonConvert.SerializeObject(dic);
             string filename = "data.json";
@@ -358,4 +360,5 @@ namespace Example11
         public string srcIp;
         public string dstIp;
     }
+
 }
