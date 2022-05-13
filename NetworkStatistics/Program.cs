@@ -25,6 +25,7 @@ namespace NetworkStatistics
         static Dictionary<string, List<Info>> dic = new Dictionary<string, List<Info>>();
         static Dictionary<DateTime, int> dicCounter = new Dictionary<DateTime, int>();
         static ILiveDevice device;
+        private static Stopwatch stopwatch;
 
         static bool countFlag = true;
 
@@ -112,6 +113,8 @@ namespace NetworkStatistics
             });
 
             // Start capture 'INFINTE' number of packets
+            stopwatch = new Stopwatch();
+            stopwatch.Start();
             device.Capture();
         }
 
@@ -135,7 +138,7 @@ namespace NetworkStatistics
 
             countFlag = false;
             device.OnPacketArrival -= device_OnPacketArrival;
-
+            stopwatch.Stop();
 
             string str = JsonConvert.SerializeObject(dic);
             string filename = "data.json";
@@ -149,6 +152,8 @@ namespace NetworkStatistics
             {
                 p.StartInfo.FileName = "cmd.exe";
                 p.StartInfo.Arguments = "/c python show.py";
+                p.StartInfo.CreateNoWindow = true;
+                p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 p.Start();
                 p.WaitForExit();
             }
@@ -157,6 +162,8 @@ namespace NetworkStatistics
             {
                 p.StartInfo.FileName = "cmd.exe";
                 p.StartInfo.Arguments = "/c python showEstablishment.py";
+                p.StartInfo.CreateNoWindow = true;
+                p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 p.Start();
                 p.WaitForExit();
             }
@@ -165,6 +172,8 @@ namespace NetworkStatistics
             {
                 p.StartInfo.FileName = "cmd.exe";
                 p.StartInfo.Arguments = "/c python showCount.py";
+                p.StartInfo.CreateNoWindow = true;
+                p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 p.Start();
                 p.WaitForExit();
             }
@@ -173,6 +182,7 @@ namespace NetworkStatistics
 
             Console.WriteLine("Statistics done!");
 
+            Console.ReadLine();
             System.Environment.Exit(0);
         }
 
@@ -215,7 +225,7 @@ namespace NetworkStatistics
                 {
                     dic[$"{src}-{dst}"] = new List<Info> { info };
 
-                    Console.WriteLine($"Established Count : {dic.Count}  {time.ToString("HH:mm:ss:ffffff")} Len={len} {srcIp}:{srcPort} -> {dstIp}:{dstPort}");
+                    Console.WriteLine($"Established Count : {dic.Count}  {time:HH:mm:ss:ffffff} Len={len} {srcIp}:{srcPort} -> {dstIp}:{dstPort}");
                 }
                 else
                 {
@@ -234,13 +244,6 @@ namespace NetworkStatistics
 
         private static void Statistics()
         {
-            int maxLen = 0;
-            int avgLen = 0;
-            double maxEstablishTime = 0;
-            double avgEstablishTime = 0;
-            int maxEstablishLen = 0;
-            int avgEstablishLen = 0;
-
             var avgLst = new List<Info>();
             var establishLst = new List<List<Info>>();
             var establishTimeLst = new List<TimeSpan>();
@@ -272,12 +275,12 @@ namespace NetworkStatistics
                 }
             }
 
-            maxLen = avgLst.Max(t => t.len);
-            avgLen = (int)avgLst.Average(t => t.len);
-            maxEstablishLen = establishLst.Max(t => t.Max(o => o.len));
-            avgEstablishLen = (int)establishLst.Average(t => t.Average(o => o.len));
-            maxEstablishTime = establishTimeLst.Max(t => t.TotalMilliseconds);
-            avgEstablishTime = establishTimeLst.Average(t => t.TotalMilliseconds);
+            var maxLen = avgLst.Max(t => t.len);
+            var avgLen = (int)avgLst.Average(t => t.len);
+            var maxEstablishLen = establishLst.Max(t => t.Max(o => o.len));
+            var avgEstablishLen = (int)establishLst.Average(t => t.Average(o => o.len));
+            var maxEstablishTime = establishTimeLst.Max(t => t.TotalMilliseconds);
+            var avgEstablishTime = establishTimeLst.Average(t => t.TotalMilliseconds);
 
             StringBuilder sb = new StringBuilder();
 
@@ -285,8 +288,10 @@ namespace NetworkStatistics
             sb.Append($"Average Package len : {avgLen}{Environment.NewLine}");
             sb.Append($"Max Establishment Time (ms): {maxEstablishTime} {Environment.NewLine}");
             sb.Append($"Average Establishment Time (ms): {avgEstablishTime} {Environment.NewLine}");
-            sb.Append($"Max Establishment Packge Len : {maxEstablishLen} {Environment.NewLine}");
+            sb.Append($"Max Establishment Package Len : {maxEstablishLen} {Environment.NewLine}");
             sb.Append($"Average Establishment Package Len : {avgEstablishLen} {Environment.NewLine}");
+            sb.Append($"Establishment Count : {dic.Count} {Environment.NewLine}");
+            sb.Append($"Time : {stopwatch.Elapsed.TotalMinutes} {Environment.NewLine}");
 
             if (!Directory.Exists("Statistics"))
             {
@@ -349,7 +354,6 @@ namespace NetworkStatistics
             Console.WriteLine("");
         }
     }
-
 
     class Info
     {
