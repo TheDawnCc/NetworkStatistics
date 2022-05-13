@@ -2,7 +2,7 @@
 import pygal
 import os
 
-filename = 'data.json'
+filename = 'statistics/data.json'
 with open(filename) as f:
 	datas = json.load(f)
 

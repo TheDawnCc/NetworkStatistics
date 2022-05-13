@@ -4,7 +4,7 @@ import os
 
 from pygal.graph.line import Line
 
-filename = 'count.json'
+filename = 'statistics/count.json'
 with open(filename) as f:
     datas = json.load(f)
 

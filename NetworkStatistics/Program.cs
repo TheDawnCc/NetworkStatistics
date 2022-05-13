@@ -124,6 +124,11 @@ namespace NetworkStatistics
             if (Directory.Exists("statistics"))
             {
                 Directory.Delete("statistics", true);
+                Directory.CreateDirectory("statistics");
+            }
+            else
+            {
+                Directory.CreateDirectory("statistics");
             }
 
             if (File.Exists("data.json"))
@@ -141,11 +146,11 @@ namespace NetworkStatistics
             stopwatch.Stop();
 
             string str = JsonConvert.SerializeObject(dic);
-            string filename = "data.json";
+            string filename = "statistics/data.json";
             File.WriteAllText(filename, str);
 
             str = JsonConvert.SerializeObject(dicCounter);
-            filename = "count.json";
+            filename = "statistics/count.json";
             File.WriteAllText(filename, str);
 
             using (Process p = new Process())
