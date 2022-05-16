@@ -153,15 +153,15 @@ namespace NetworkStatistics
             filename = "statistics/count.json";
             File.WriteAllText(filename, str);
 
-            using (Process p = new Process())
-            {
-                p.StartInfo.FileName = "cmd.exe";
-                p.StartInfo.Arguments = "/c python show.py";
-                p.StartInfo.CreateNoWindow = true;
-                p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                p.Start();
-                p.WaitForExit();
-            }
+            //using (Process p = new Process())
+            //{
+            //    p.StartInfo.FileName = "cmd.exe";
+            //    p.StartInfo.Arguments = "/c python show.py";
+            //    p.StartInfo.CreateNoWindow = true;
+            //    p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            //    p.Start();
+            //    p.WaitForExit();
+            //}
 
             using (Process p = new Process())
             {
@@ -177,6 +177,16 @@ namespace NetworkStatistics
             {
                 p.StartInfo.FileName = "cmd.exe";
                 p.StartInfo.Arguments = "/c python showCount.py";
+                p.StartInfo.CreateNoWindow = true;
+                p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                p.Start();
+                p.WaitForExit();
+            }
+
+            using (Process p = new Process())
+            {
+                p.StartInfo.FileName = "cmd.exe";
+                p.StartInfo.Arguments = "/c python showShort.py";
                 p.StartInfo.CreateNoWindow = true;
                 p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 p.Start();
