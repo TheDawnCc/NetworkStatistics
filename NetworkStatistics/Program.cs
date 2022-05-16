@@ -131,14 +131,14 @@ namespace NetworkStatistics
                 Directory.CreateDirectory("statistics");
             }
 
-            if (File.Exists("data.json"))
+            if (File.Exists("statistics/data.json"))
             {
-                File.Delete("data.json");
+                File.Delete("statistics/data.json");
             }
 
-            if (File.Exists("count.json"))
+            if (File.Exists("statistics/count.json"))
             {
-                File.Delete("count.json");
+                File.Delete("statistics/count.json");
             }
 
             countFlag = false;
