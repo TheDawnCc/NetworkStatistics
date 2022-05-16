@@ -12,7 +12,6 @@ for x,y in datas.items():
 	t1 = datetime.datetime.strptime(y[-1]['time'],'%Y-%m-%dT%H:%M:%S.%f%z')
 	t2 = datetime.datetime.strptime(y[0]['time'],'%Y-%m-%dT%H:%M:%S.%f%z')
 	span = t1 - t2
-	print(span.total_seconds())
 	if span.total_seconds() < 5:
 		size = 0
 		for z in y:
